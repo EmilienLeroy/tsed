@@ -1,38 +1,19 @@
-import {HttpServer, Inject, InjectorService, Module, OnInit, PlatformApplication} from "@tsed/common";
-import {createTerminus} from "@godaddy/terminus";
+import {HttpServer, HttpsServer, Inject, InjectorService, Module, OnInit, PlatformApplication} from "@tsed/common";
+import {TerminusService} from "./services/TerminusService";
 
 @Module()
 export class TerminusModule implements OnInit {
   @Inject()
-  app: PlatformApplication;
+  private terminusService: TerminusService;
 
-  @Inject()
-  injector: InjectorService;
-
-  constructor(@Inject(HttpServer) private httpServer: HttpServer) {}
+  constructor(
+    @Inject(HttpServer)
+    private httpServer: HttpServer,
+    @Inject(HttpsServer)
+    private httpsServer: HttpsServer
+  ) {}
 
   public $onInit() {
-    createTerminus(this.httpServer, {
-      logger: console.log,
-      healthChecks: this.getHealths()
-    });
-  }
-
-  private getProviders() {
-    return this.injector.getProviders().filter((provider) => {
-      return provider.store.get("terminus");
-    });
-  }
-
-  private getHealths() {
-    const healths: {[k: string]: () => Promise<any>} = {};
-
-    this.getProviders().forEach((provider) => {
-      Object.keys(provider.store.get("terminus")).forEach((name) => {
-        healths[`${provider.path}${name}`] = provider.store.get("terminus")[name];
-      });
-    });
-
-    return healths;
+    this.terminusService.mount(this.httpServer, this.httpsServer);
   }
 }
