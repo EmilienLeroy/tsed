@@ -25,14 +25,14 @@ export class TerminusModule implements OnInit {
   }
 
   private getHealths() {
-    const heatlhs: {[k: string]: () => Promise<any>} = {};
+    const healths: {[k: string]: () => Promise<any>} = {};
 
     this.getProviders().forEach((provider) => {
       Object.keys(provider.store.get("terminus")).forEach((name) => {
-        heatlhs[`${provider.path}${name}`] = provider.store.get("terminus")[name];
+        healths[`${provider.path}${name}`] = provider.store.get("terminus")[name];
       });
     });
 
-    return heatlhs;
+    return healths;
   }
 }

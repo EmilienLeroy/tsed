@@ -5,23 +5,23 @@ import {Configuration, Inject} from "@tsed/di";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import {Application} from "express";
-import { Heatlh } from "../../src";
+import { Health } from "../../src";
 import "../../src";
 
 export const rootDir = __dirname;
 
 @Controller("/mongo")
 class Mongo {
-  @Heatlh("/heatlh")
-  heatlh() {
+  @Health("/health")
+  health() {
     return Promise.resolve();
   }
 }
 
 @Controller("/redis")
 class Redis {
-  @Heatlh("/heatlh")
-  heatlh() {
+  @Health("/health")
+  health() {
     return Promise.reject(new HealthCheckError('failed', {
       redis: 'down',
     }));
@@ -34,6 +34,7 @@ class Redis {
   mount: {
     Mongo,
     Redis,
+    '/test': Redis,
   },
   middlewares: [
     cookieParser(),
