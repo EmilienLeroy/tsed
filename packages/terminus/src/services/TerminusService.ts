@@ -1,4 +1,4 @@
-import {Inject, InjectorService, Service} from "@tsed/di/src";
+import {Configuration, Inject, InjectorService, Service} from "@tsed/di/src";
 import {HttpServer, HttpsServer} from "packages/common/src/platform";
 import {createTerminus} from "@godaddy/terminus";
 
@@ -6,6 +6,9 @@ import {createTerminus} from "@godaddy/terminus";
 export class TerminusService {
   @Inject()
   private injector: InjectorService;
+
+  @Configuration()
+  private configuration: Configuration;
 
   private getProviders() {
     return this.injector.getProviders().filter((provider) => {
@@ -26,17 +29,21 @@ export class TerminusService {
   }
 
   public mount(httpServer?: HttpServer, httpsServer?: HttpsServer) {
+    const {terminus} = this.configuration;
+
     if (httpServer) {
       createTerminus(httpServer, {
         logger: console.log,
-        healthChecks: this.getHealths()
+        healthChecks: this.getHealths(),
+        ...terminus
       });
     }
 
     if (httpsServer) {
       createTerminus(httpsServer, {
         logger: console.log,
-        healthChecks: this.getHealths()
+        healthChecks: this.getHealths(),
+        ...terminus
       });
     }
   }

@@ -36,6 +36,9 @@ class Redis {
     Redis,
     '/test': Redis,
   },
+  terminus: {
+    statusError: 500,
+  },
   middlewares: [
     cookieParser(),
     bodyParser.json(),
